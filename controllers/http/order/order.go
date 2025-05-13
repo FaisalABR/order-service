@@ -53,7 +53,7 @@ func (o *OrderControllers) GetAllWithPagination(c *gin.Context) {
 		return
 	}
 
-	orders, err := o.services.GetOrder().GetAllWithPagination(c, &params)
+	orders, err := o.services.GetOrder().GetAllWithPagination(c.Request.Context(), &params)
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code:  http.StatusInternalServerError,
@@ -71,7 +71,7 @@ func (o *OrderControllers) GetAllWithPagination(c *gin.Context) {
 }
 
 func (o *OrderControllers) GetByUUID(c *gin.Context) {
-	result, err := o.services.GetOrder().GetByUUID(c, c.Param("uuid"))
+	result, err := o.services.GetOrder().GetByUUID(c.Request.Context(), c.Param("uuid"))
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code:  http.StatusInternalServerError,
@@ -89,7 +89,7 @@ func (o *OrderControllers) GetByUUID(c *gin.Context) {
 }
 
 func (o *OrderControllers) GetOrderByUserID(c *gin.Context) {
-	result, err := o.services.GetOrder().GetOrderByUserID(c)
+	result, err := o.services.GetOrder().GetOrderByUserID(c.Request.Context())
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code:  http.StatusInternalServerError,
@@ -133,7 +133,7 @@ func (o *OrderControllers) Create(c *gin.Context) {
 		return
 	}
 
-	result, err := o.services.GetOrder().Create(c, &request)
+	result, err := o.services.GetOrder().Create(c.Request.Context(), &request)
 	if err != nil {
 		response.HttpResponse(response.ParamHTTPResp{
 			Code:  http.StatusInternalServerError,

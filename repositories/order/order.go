@@ -82,7 +82,7 @@ func (o *OrderRepository) FindByUUID(ctx context.Context, uuid string) (*models.
 
 func (o *OrderRepository) FindByUserID(ctx context.Context, userID string) ([]models.Order, error) {
 	var orders []models.Order
-	err := o.db.WithContext(ctx).Where("user_id = ?", userID).First(&orders).Error
+	err := o.db.WithContext(ctx).Where("user_id = ?", userID).Find(&orders).Error
 	if err != nil {
 		return nil, errWrap.WrapError(errConstant.ErrSqlQuery)
 	}

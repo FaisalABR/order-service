@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -150,7 +151,7 @@ func (o *OrderService) Create(ctx context.Context, request *dto.OrderRequest) (*
 	var (
 		order               *models.Order
 		txErr, err          error
-		user                = ctx.Value(constants.User).(clientUser.UserData)
+		user                = ctx.Value(constants.User).(*clientUser.UserData)
 		field               *clientField.FieldData
 		paymentResponse     *clientPayment.PaymentData
 		orderFieldSchedules = make([]models.OrderField, 0, len(request.FieldScheduleIDs))
@@ -281,7 +282,7 @@ func (o *OrderService) mapPaymentStatusToOrder(request *dto.PaymentData) (consta
 			Status:    status,
 		}
 	case constants.PendingPaymentStatus:
-		status = constants.Pending
+		status = constants.PendingPayment
 		order = &models.Order{
 			IsPaid:    false,
 			PaymentID: request.PaymentID,
@@ -289,6 +290,9 @@ func (o *OrderService) mapPaymentStatusToOrder(request *dto.PaymentData) (consta
 			Status:    status,
 		}
 	}
+
+	logrus.Infof("status >>> %v", status)
+	logrus.Infof("order >>> %v", order)
 
 	return status, order
 }
@@ -300,7 +304,10 @@ func (o *OrderService) HandlePayment(ctx context.Context, request *dto.PaymentDa
 		orderFieldSchedules []models.OrderField
 	)
 
+	logrus.Infof("request handle payment >>> %v", request)
+
 	status, body := o.mapPaymentStatusToOrder(request)
+	logrus.Infof("body handle payment>>> %v", body)
 	err = o.repositories.GetTx().Transaction(func(tx *gorm.DB) error {
 		txErr = o.repositories.GetOrder().Update(ctx, tx, body, request.OrderID)
 		if txErr != nil {

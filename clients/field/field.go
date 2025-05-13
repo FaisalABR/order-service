@@ -77,7 +77,7 @@ func (f *FieldClient) UpdateStatus(request *dto.UpdateFieldScheduleStatusRequest
 	}
 
 	resp, bodyResp, errs := f.client.Client().Clone().
-		Post(fmt.Sprintf("%s/api/v1/payment", f.client.BaseURL())).
+		Patch(fmt.Sprintf("%s/api/v1/field/schedule/status", f.client.BaseURL())).
 		Set(constants.XApiKey, apiKey).
 		Set(constants.XServiceName, configApp.Config.AppName).
 		Set(constants.XRequestAt, fmt.Sprintf("%d", unixTime)).
@@ -89,12 +89,13 @@ func (f *FieldClient) UpdateStatus(request *dto.UpdateFieldScheduleStatusRequest
 	}
 
 	var response FieldResponse
-	if resp.StatusCode != http.StatusCreated {
+
+	if resp.StatusCode != http.StatusOK {
 		err = json.Unmarshal([]byte(bodyResp), &response)
 		if err != nil {
 			return err
 		}
-		fieldError := fmt.Errorf("payment response: %s", response.Message)
+		fieldError := fmt.Errorf("field response: %s", response.Message)
 		return fieldError
 	}
 

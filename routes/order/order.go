@@ -32,7 +32,7 @@ func NewOrderRoute(
 }
 
 func (o *OrderRoutes) Run() {
-	group := o.group.Group("/orders")
+	group := o.group.Group("/order")
 	group.Use(middlewares.Authenticate())
 	group.GET("", middlewares.CheckRole([]string{
 		constants.Customer,
